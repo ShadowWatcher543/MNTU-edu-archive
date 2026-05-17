@@ -47,7 +47,7 @@ namespace Program {
         std::vector<int> performSearch(bool& isCancelled);
 
         std::string massCreateMenu();
-        std::string createPyramidSubMenu(std::string message);
+        std::string createPyramidSubMenu();
         std::string createObjectMenu();
 
         std::string displayObjectsMenu();

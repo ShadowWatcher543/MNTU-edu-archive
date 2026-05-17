@@ -278,8 +278,9 @@ namespace Program {
         return "[!] Успішно згенеровано " + std::to_string(count) + " об'єктів.";
     }
 
-    std::string Menu::createPyramidSubMenu(std::string message) {
+    std::string Menu::createPyramidSubMenu() {
 
+        std::string message = "[!] Ви обрали 2. Створення піраміди.";
         clearConsole();
         showAnswer(&message);
 
@@ -343,7 +344,7 @@ namespace Program {
                 objectsList->push_back(new Object(cords));
                 return "[!] Базовий об'єкт створено.";
             }
-            case '2': return createPyramidSubMenu("[!] Ви обрали 2. Створення піраміди.");
+            case '2': return createPyramidSubMenu();
             case '3': {
                 std::vector<std::string> fields = {"Координата X", "Координата Y", "Координата Z", "Радіус"};
                 std::vector<double> vals = fillInputForm("Заповнення: Сфера", fields);
@@ -407,7 +408,7 @@ namespace Program {
             return "[!] Немає об'єктів для редагування.";
         }
 
-        std::string actionResult = "";
+        std::string actionResult;
         for (int i = 0; i < foundIds.size(); i++) {
             int targetId = foundIds[i];
             bool isWork;
@@ -527,7 +528,7 @@ namespace Program {
 
 
         if (!isDeleted.empty()) {
-            std::string message = "[!] Об'єкти з ID ";
+            message = "[!] Об'єкти з ID ";
             for (int id : isDeleted)
                 message += std::to_string(id) + ", ";
             message += "успішно видалено.";

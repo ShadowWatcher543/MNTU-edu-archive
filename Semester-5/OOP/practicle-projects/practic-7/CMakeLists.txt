@@ -16,4 +16,5 @@ add_executable(practic_7 clases/main.cpp
         clases/QuadrangularPyramid.cpp
         clases/QuadrangularPyramid.h
         clases/Menu.h
-        clases/Menu.cpp)
+        clases/Menu.cpp
+)
