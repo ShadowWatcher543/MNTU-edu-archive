@@ -1,0 +1,13 @@
+{
+  "name": "independent-project-1",
+  "version": "1.0.0",
+  "description": "Виконання Самостійна робота №1. Змінні та типи даних",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
