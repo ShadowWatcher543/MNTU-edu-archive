@@ -1,0 +1,386 @@
+// Типи даних
+interface Post {
+    postId: string;
+    content: string;
+    createdAt: Date;
+}
+
+interface ProfileData {
+    userId: string;
+    username: string;
+    bio: string;
+    avatar: string;
+}
+
+
+
+// Функція конструктор для створення об'єкта профілю користувача.
+// Реалізує методи взаємодії з підписниками та постами.
+function createProfileObject(data: ProfileData) {
+    return {
+        userId: data.userId,
+        username: data.username,
+        bio: data.bio,
+        avatar: data.avatar,
+        followers: [] as string[],
+        following: [] as string[],
+        posts: [] as Post[],
+
+        // Геттери
+        get followerCount(): number {
+            return this.followers.length;
+        },
+        get followingCount(): number {
+            return this.following.length;
+        },
+        get postCount(): number {
+            return this.posts.length;
+        },
+
+        // Методи профілю
+        follow(targetUserId: string): void {
+            // Перевіряємо через цикл, чи вже підписані
+            let alreadyFollowing = false;
+            for (let i = 0; i < this.following.length; i++) {
+                if (this.following[i] === targetUserId) {
+                    alreadyFollowing = true;
+                    break;
+                }
+            }
+            if (!alreadyFollowing && this.userId !== targetUserId) {
+                this.following.push(targetUserId);
+            }
+        },
+
+        unfollow(targetUserId: string): void {
+            const updatedFollowing: string[] = [];
+            for (let i = 0; i < this.following.length; i++) {
+                if (this.following[i] !== targetUserId) {
+                    updatedFollowing.push(this.following[i]);
+                }
+            }
+            this.following = updatedFollowing;
+        },
+
+        addPost(postId: string, content: string): void {
+            this.posts.push({
+                postId: postId,
+                content: content,
+                createdAt: new Date()
+            });
+        },
+
+        getPosts(): Post[] {
+            return this.posts;
+        }
+    };
+}
+
+// Повертає тип об'єкта, який створює функція вище
+type UserProfile = ReturnType<typeof createProfileObject>;
+
+
+// Менеджер профілів соцмережі.
+// Керує базою даних користувачів та соціальними зв'язками.
+function createProfileManager() {
+    return {
+        profiles: [] as UserProfile[],
+
+        createProfile(data: ProfileData): UserProfile {
+            const newProfile = createProfileObject(data);
+            this.profiles.push(newProfile);
+            return newProfile;
+        },
+
+        getProfile(userId: string): UserProfile | null {
+            for (let i = 0; i < this.profiles.length; i++) {
+                if (this.profiles[i].userId === userId) {
+                    return this.profiles[i];
+                }
+            }
+            return null;
+        },
+
+        updateProfile(userId: string, data: Partial<ProfileData>): boolean {
+            const profile = this.getProfile(userId);
+            if (!profile) return false;
+
+            // Деструктуризація для оновлення полів, якщо вони передані
+            const { username, bio, avatar } = data;
+            if (username !== undefined) profile.username = username;
+            if (bio !== undefined) profile.bio = bio;
+            if (avatar !== undefined) profile.avatar = avatar;
+
+            return true;
+        },
+
+        deleteProfile(userId: string): boolean {
+            const updatedProfiles: UserProfile[] = [];
+            let deleted = false;
+
+            for (let i = 0; i < this.profiles.length; i++) {
+                if (this.profiles[i].userId === userId) {
+                    deleted = true;
+                } else {
+                    updatedProfiles.push(this.profiles[i]);
+                }
+            }
+            this.profiles = updatedProfiles;
+            return deleted;
+        },
+
+        searchProfiles(query: string): UserProfile[] {
+            const result: UserProfile[] = [];
+            const lowerQuery = query.toLowerCase();
+
+            for (let i = 0; i < this.profiles.length; i++) {
+                const usernameLower = this.profiles[i].username.toLowerCase();
+                const bioLower = this.profiles[i].bio.toLowerCase();
+
+                // Перевірка входження підрядка (ручний пошук через indexOf)
+                if (usernameLower.indexOf(lowerQuery) !== -1 || bioLower.indexOf(lowerQuery) !== -1) {
+                    result.push(this.profiles[i]);
+                }
+            }
+            return result;
+        },
+
+        getSuggestedProfiles(userId: string): UserProfile[] {
+            const user = this.getProfile(userId);
+            if (!user) return [];
+
+            const suggestions: UserProfile[] = [];
+
+            // Проста логіка рекомендацій: пропонуємо користувачів, на яких ми ще не підписані
+            // і які не є нами самими
+            for (let i = 0; i < this.profiles.length; i++) {
+                const targetProfile = this.profiles[i];
+                if (targetProfile.userId === userId) continue;
+
+                let isAlreadyFollowed = false;
+                for (let j = 0; j < user.following.length; j++) {
+                    if (user.following[j] === targetProfile.userId) {
+                        isAlreadyFollowed = true;
+                        break;
+                    }
+                }
+
+                if (!isAlreadyFollowed) {
+                    suggestions.push(targetProfile);
+                }
+            }
+            return suggestions;
+        },
+
+        // --- Блок Social Features ---
+
+        getMutualFollowers(userId1: string, userId2: string): string[] {
+            const user1 = this.getProfile(userId1);
+            const user2 = this.getProfile(userId2);
+            if (!user1 || !user2) return [];
+
+            const mutual: string[] = [];
+            // Пошук перетину масивів (Set/Intersection робота вручну)
+            for (let i = 0; i < user1.following.length; i++) {
+                for (let j = 0; j < user2.following.length; j++) {
+                    if (user1.following[i] === user2.following[j]) {
+                        mutual.push(user1.following[i]);
+                        break;
+                    }
+                }
+            }
+            return mutual;
+        },
+
+        getFollowersNotFollowingBack(userId: string): string[] {
+            const user = this.getProfile(userId);
+            if (!user) return [];
+
+            const notFollowingBack: string[] = [];
+
+            for (let i = 0; i < user.followers.length; i++) {
+                const followerId = user.followers[i];
+                let isFollowingBack = false;
+
+                for (let j = 0; j < user.following.length; j++) {
+                    if (user.following[j] === followerId) {
+                        isFollowingBack = true;
+                        break;
+                    }
+                }
+
+                if (!isFollowingBack) {
+                    notFollowingBack.push(followerId);
+                }
+            }
+            return notFollowingBack;
+        },
+
+        getPopularProfiles(minFollowers: number): UserProfile[] {
+            const popular: UserProfile[] = [];
+            for (let i = 0; i < this.profiles.length; i++) {
+                if (this.profiles[i].followerCount >= minFollowers) {
+                    popular.push(this.profiles[i]);
+                }
+            }
+            return popular;
+        },
+
+        getUserFeed(userId: string): Post[] {
+            const user = this.getProfile(userId);
+            if (!user) return [];
+
+            const feed: Post[] = [];
+
+            // Збираємо пости від усіх користувачів, на яких підписані
+            for (let i = 0; i < user.following.length; i++) {
+                const followedUser = this.getProfile(user.following[i]);
+                if (followedUser) {
+                    for (let j = 0; j < followedUser.posts.length; j++) {
+                        feed.push(followedUser.posts[j]);
+                    }
+                }
+            }
+
+            // Просте сортування постів від новіших до старіших за допомогою класичної бульбашки
+            for (let i = 0; i < feed.length; i++) {
+                for (let j = 0; j < feed.length - 1 - i; j++) {
+                    if (feed[j].createdAt.getTime() < feed[j + 1].createdAt.getTime()) {
+                        const temp = feed[j];
+                        feed[j] = feed[j + 1];
+                        feed[j + 1] = temp;
+                    }
+                }
+            }
+
+            return feed;
+        }
+    };
+}
+
+function unitTests() {
+    console.log("=== СТАРТ UNIT ТЕСТУВАННЯ СОЦМЕРЕЖІ ===");
+
+    const manager = createProfileManager();
+
+    // 1. Тест створення профілів
+    const p1 = manager.createProfile({ userId: "1", username: "yan_panenko", bio: "TypeScript dev", avatar: "dev.png" });
+    const p2 = manager.createProfile({ userId: "2", username: "max_coder", bio: "Gamer and frontend tech", avatar: "max.png" });
+    const p3 = manager.createProfile({ userId: "3", username: "anna_design", bio: "UI/UX Designer", avatar: "anna.png" });
+
+    console.log(`Тест створення: ${manager.profiles.length === 3 ? "PASSED" : "FAILED"}`);
+
+    // 2. Тест підписок (Follow System)
+    // Імітуємо взаємний зв'язок (Ян підписується на Макса, Макс додає Яна в підписники)
+    p1.follow("2");
+    p2.followers.push("1");
+
+    p1.follow("3");
+    p3.followers.push("1");
+
+    p2.follow("3");
+    p3.followers.push("2");
+
+    console.log(`Тест геттера підписок Ян: ${p1.followingCount === 2 ? "PASSED" : "FAILED"}`);
+    console.log(`Тест геттера підписників Анна: ${p3.followerCount === 2 ? "PASSED" : "FAILED"}`);
+
+    // 3. Тест оновлення профілю
+    const updateStatus = manager.updateProfile("1", { bio: "Arch Linux fan & C++ programmer" });
+    console.log(`Тест оновлення даних: ${updateStatus && p1.bio === "Arch Linux fan & C++ programmer" ? "PASSED" : "FAILED"}`);
+
+    // 4. Тест пошуку
+    const searchResult = manager.searchProfiles("Linux");
+    console.log(`Тест пошуку профілів: ${searchResult.length === 1 && searchResult[0].userId === "1" ? "PASSED" : "FAILED"}`);
+
+    // 5. Тест Social Features: Спільні підписки (Mutual Followers)
+    const mutual = manager.getMutualFollowers("1", "2"); // Обидва підписані на Анну (id "3")
+    console.log(`Тест спільних підписок: ${mutual.length === 1 && mutual[0] === "3" ? "PASSED" : "FAILED"}`);
+
+    // 6. Тест Хто не підписався взаємно
+    const notBack = manager.getFollowersNotFollowingBack("3"); // На Анну підписані 1 і 2, але вона ні на кого
+    console.log(`Тест не взаємних підписок: ${notBack.length === 2 ? "PASSED" : "FAILED"}`);
+
+    // 7. Тест Стрічки новин (Feed)
+    p2.addPost("101", "Мій перший пост про комп'ютери!");
+    p3.addPost("102", "Новий дизайн-концепт готовий.");
+
+    const userFeed = manager.getUserFeed("1"); // Ян підписаний на 2 і 3
+    console.log(`Тест генерації стрічки: ${userFeed.length === 2 ? "PASSED" : "FAILED"}`);
+
+    // 8. Тест видалення профілю
+    const deleteStatus = manager.deleteProfile("2");
+    console.log(`Тест видалення користувача: ${deleteStatus && manager.profiles.length === 2 ? "PASSED" : "FAILED"}`);
+
+    console.log("=== ТЕСТУВАННЯ ЗАВЕРШЕНО ===");
+}
+
+
+function main () {
+    console.log("=== ДЕМОНСТРАЦІЯ РОБОТИ СИСТЕМИ ===");
+
+    // Очистимо менеджер та створимо свіжі дані для чистого показу
+    const demoManager = createProfileManager();
+
+    console.log("1. Створення нових користувачів...");
+    const userYan = demoManager.createProfile({ userId: "10", username: "yan_p", bio: "Arch Linux User", avatar: "yan.jpg" });
+    const userMax = demoManager.createProfile({ userId: "20", username: "max_game", bio: "Minecraft & LoL player", avatar: "max.jpg" });
+    const userBot = demoManager.createProfile({ userId: "30", username: "news_bot", bio: "Automated Tech News", avatar: "bot.jpg" });
+
+    console.log(`Успішно створено профілів: ${demoManager.profiles.length}`);
+    console.log(`Профіль користувача: @${userYan.username} (${userYan.bio})`);
+
+    console.log("\n2. Симуляція підписок (Follow System)...");
+    userYan.follow("20"); userMax.followers.push("10"); // Ян підписався на Макса
+    userYan.follow("30"); userBot.followers.push("10"); // Ян підписався на Бота
+    userMax.follow("10"); userYan.followers.push("20"); // Макс підписався на Яна взаємно
+
+    console.log(`@${userYan.username} підписаний на користувачів: [${userYan.following.join(", ")}]`);
+    console.log(`Геттер підписників @${userYan.username}: ${userYan.followerCount}`);
+    console.log(`Геттер підписок @${userYan.username}: ${userYan.followingCount}`);
+
+    console.log("\n3. Публікація контенту (Постів)...");
+    // Публікуємо пости з невеликою штучною затримкою у часі
+    userMax.addPost("p_max_1", "Запустив Wayland в Minecraft!");
+    userBot.addPost("p_bot_1", "Вийшло оновлення ядра Linux 6.x!");
+
+    console.log(`@${userMax.username} опублікував постів: ${userMax.postCount}`);
+    console.log(`@${userBot.username} опублікував постів: ${userBot.postCount}`);
+
+    console.log("\n4. Генерація стрічки новин (Feed) для Яна...");
+    const yanFeed = demoManager.getUserFeed("10"); // Збирає пости від тих, на кого підписаний Ян
+
+    console.log(`--- СТРІЧКА НОВИН КОРИСТУВАЧА @${userYan.username} (${yanFeed.length} постів) ---`);
+    for (let i = 0; i < yanFeed.length; i++) {
+        // Шукаємо автора поста для красивого виводу
+        let authorName = "Unknown";
+        for (let j = 0; j < demoManager.profiles.length; j++) {
+            // Проходимо по постах кожного користувача "руками"
+            const checkProfile = demoManager.profiles[j];
+            for (let k = 0; k < checkProfile.posts.length; k++) {
+                if (checkProfile.posts[k].postId === yanFeed[i].postId) {
+                    authorName = checkProfile.username;
+                    break;
+                }
+            }
+        }
+        console.log(`[${yanFeed[i].createdAt.toLocaleTimeString()}] @${authorName}: "${yanFeed[i].content}"`);
+    }
+
+    console.log("\n5. Перевірка Social Features...");
+    const mutuals = demoManager.getMutualFollowers("10", "20");
+    console.log(`Спільні підписки між @${userYan.username} та @${userMax.username} (ID): [${mutuals.join(", ")}]`);
+
+    const toxicFollowers = demoManager.getFollowersNotFollowingBack("10");
+    console.log(`Підписники, які не підписалися на @${userYan.username} взаємно (ID): [${toxicFollowers.join(", ")}]`);
+
+    console.log("\n=== ДЕМОНСТРАЦІЯ ЗАКІНЧЕНА УСПІШНО ===");
+}
+
+
+
+unitTests()
+
+console.log("\n\n\n")
+
+main()
+
