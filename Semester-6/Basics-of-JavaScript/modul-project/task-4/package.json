@@ -1,0 +1,13 @@
+{
+  "name": "task-4",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "npx vite --open"
+  },
+  "type": "module",
+  "license": "ISC",
+  "dependencies": {
+    "vite": "^8.0.14"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "task-3",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "dev": "node index.ts"
+  },
+  "type": "module"
+}
