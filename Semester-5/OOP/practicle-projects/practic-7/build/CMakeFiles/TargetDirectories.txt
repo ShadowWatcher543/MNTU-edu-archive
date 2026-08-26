@@ -1,0 +1,3 @@
+/home/yan/Documents/Навчання/МНТУ/MNTU-edu-archive/Semester-5/OOP/practicle-projects/practic-7/build/CMakeFiles/practic_7.dir
+/home/yan/Documents/Навчання/МНТУ/MNTU-edu-archive/Semester-5/OOP/practicle-projects/practic-7/build/CMakeFiles/edit_cache.dir
+/home/yan/Documents/Навчання/МНТУ/MNTU-edu-archive/Semester-5/OOP/practicle-projects/practic-7/build/CMakeFiles/rebuild_cache.dir
