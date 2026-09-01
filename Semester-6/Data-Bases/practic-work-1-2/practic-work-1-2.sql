@@ -60,15 +60,14 @@ VALUES
 
 create table achievements(
     id serial primary key,
-    game_id int foreign key (game_id) references games (id)
+    game_id int,
     title varchar(100) not null,
-    description text
+    description text,
+    
+    foreign key (game_id) references games (id) on delete cascade 
 );
 
-
-
-
-
+-- drop table achievements;
 
 
 
