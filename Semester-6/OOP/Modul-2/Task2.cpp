@@ -1,29 +1,50 @@
 // #include <iostream>
-// #include <vector>
-// #include <string>
 // using namespace std;
 //
-// template <typename T>
-// class Stack {
-//     vector<T> st;
-// public:
-//     void push(T val) { st.push_back(val); }
-//     void pop() { if(!st.empty()) st.pop_back(); }
+// class Counter {
+// private:
+//     int minVal;
+//     int maxVal;
+//     int current;
 //
-//     string getLongest() {
-//         string maxStr = "";
-//         for (auto& s : st) {
-//             if (s.length() > maxStr.length()) maxStr = s;
+// public:
+//     Counter(int minV = 0, int maxV = 10) : minVal(minV), maxVal(maxV), current(minV) {
+//         if (minVal >= maxVal) {
+//             minVal = 0;
+//             maxVal = 10;
+//             current = 0;
 //         }
-//         return maxStr;
+//     }
+//
+//     void setRange(int minV, int maxV) {
+//         if (minV < maxV) {
+//             minVal = minV;
+//             maxVal = maxV;
+//             if (current < minVal || current > maxVal) {
+//                 current = minVal;
+//             }
+//         }
+//     }
+//
+//     void increment() {
+//         current++;
+//         if (current >= maxVal) {
+//             current = minVal;
+//         }
+//     }
+//
+//     int getValue() const {
+//         return current;
 //     }
 // };
 //
 // int main() {
-//     Stack<string> st;
-//     st.push("cpp");
-//     st.push("some long string here");
-//     st.push("hello");
+//     Counter c(0, 3);
 //
-//     cout << "Найдовший: " << st.getLongest();
+//     for (int i = 0; i < 5; i++) {
+//         cout << "Значення: " << c.getValue() << endl;
+//         c.increment();
+//     }
+//
+//     return 0;
 // }

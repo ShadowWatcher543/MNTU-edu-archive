@@ -1,42 +1,134 @@
 // #include <iostream>
-// #include <cmath>
 // using namespace std;
 //
-// class Equation {
+// template <typename T>
+// class Matrix {
+// private:
+//     int rows, cols;
+//     T** data;
+//
+//     void allocate() {
+//         data = new T*[rows];
+//         for (int i = 0; i < rows; i++) {
+//             data[i] = new T[cols]();
+//         }
+//     }
+//
+//     void free() {
+//         if (data) {
+//             for (int i = 0; i < rows; i++) {
+//                 delete[] data[i];
+//             }
+//             delete[] data;
+//         }
+//     }
+//
 // public:
-//     virtual ~Equation() {}
-//     virtual void solve() = 0;
+//     Matrix(int r, int c) : rows(r), cols(c) {
+//         allocate();
+//     }
+//
+//     ~Matrix() {
+//         free();
+//     }
+//
+//     int getRows() const { return rows; }
+//     int getCols() const { return cols; }
+//
+//     T* operator[](int index) { return data[index]; }
+//     const T* operator[](int index) const { return data[index]; }
+//
+//     // копіювання всього масиву за рядками
+//     Matrix<T> copyByRows() const {
+//         Matrix<T> res(rows, cols);
+//         for (int i = 0; i < rows; i++) {
+//             for (int j = 0; j < cols; j++) {
+//                 res.data[i][j] = data[i][j];
+//             }
+//         }
+//         return res;
+//     }
+//
+//     // копіювання за стовпцями
+//     Matrix<T> copyByCols() const {
+//         Matrix<T> res(rows, cols);
+//         for (int j = 0; j < cols; j++) {
+//             for (int i = 0; i < rows; i++) {
+//                 res.data[i][j] = data[i][j];
+//             }
+//         }
+//         return res;
+//     }
+//
+//     // копіювання одного рядка
+//     T* copyRow(int r) const {
+//         T* rowCopy = new T[cols];
+//         for (int j = 0; j < cols; j++) {
+//             rowCopy[j] = data[r][j];
+//         }
+//         return rowCopy;
+//     }
+//
+//     // копіювання одного стовпчика
+//     T* copyCol(int c) const {
+//         T* colCopy = new T[rows];
+//         for (int i = 0; i < rows; i++) {
+//             colCopy[i] = data[i][c];
+//         }
+//         return colCopy;
+//     }
+//
+//     // копіювання головної діагоналі
+//     T* copyMainDiagonal(int& size) const {
+//         size = (rows < cols) ? rows : cols;
+//         T* diag = new T[size];
+//         for (int i = 0; i < size; i++) {
+//             diag[i] = data[i][i];
+//         }
+//         return diag;
+//     }
+//
+//     template <typename U>
+//     friend ostream& operator<<(ostream& os, const Matrix<U>& m);
+//
+//     template <typename U>
+//     friend istream& operator>>(istream& is, Matrix<U>& m);
 // };
 //
-// class Linear : public Equation {
-//     double a, b;
-// public:
-//     Linear(double a, double b) : a(a), b(b) {}
-//     void solve() override {
-//         if (a == 0) cout << "Немає розв'язків\n";
-//         else cout << "x = " << (-b / a) << "\n";
+// template <typename T>
+// ostream& operator<<(ostream& os, const Matrix<T>& m) {
+//     for (int i = 0; i < m.rows; i++) {
+//         for (int j = 0; j < m.cols; j++) {
+//             os << m.data[i][j] << " ";
+//         }
+//         os << "\n";
 //     }
-// };
+//     return os;
+// }
 //
-// class Quad : public Equation {
-//     double a, b, c;
-// public:
-//     Quad(double a, double b, double c) : a(a), b(b), c(c) {}
-//     void solve() override {
-//         double d = b * b - 4 * a * c;
-//         if (d < 0) cout << "Немає коренів\n";
-//         else if (d == 0) cout << "x = " << (-b / (2 * a)) << "\n";
-//         else cout << "x1 = " << (-b + sqrt(d)) / (2 * a) << ", x2 = " << (-b - sqrt(d)) / (2 * a) << "\n";
+// template <typename T>
+// istream& operator>>(istream& is, Matrix<T>& m) {
+//     for (int i = 0; i < m.rows; i++) {
+//         for (int j = 0; j < m.cols; j++) {
+//             is >> m.data[i][j];
+//         }
 //     }
-// };
+//     return is;
+// }
 //
 // int main() {
-//     Equation* eq[2];
-//     eq[0] = new Linear(2, -4);
-//     eq[1] = new Quad(1, -5, 6);
+//     Matrix<int> m(2, 2);
+//     cout << "Введіть 4 числа для матриці 2x2:\n";
+//     cin >> m;
 //
-//     for (int i = 0; i < 2; i++) {
-//         eq[i]->solve(); // пізнє зв'язування
-//         delete eq[i];
-//     }
+//     cout << "Матриця:\n" << m;
+//
+//     int diagSize = 0;
+//     int* diag = m.copyMainDiagonal(diagSize);
+//     cout << "Діагональ: ";
+//     for (int i = 0; i < diagSize; i++) cout << diag[i] << " ";
+//     cout << endl;
+//
+//     delete[] diag;
+//     return 0;
 // }

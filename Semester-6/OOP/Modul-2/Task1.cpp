@@ -1,64 +1,71 @@
 // #include <iostream>
+// #include <vector>
 // using namespace std;
 //
-// template <typename T>
-// class CircularList {
-//     struct Node {
-//         T data;
-//         Node* next;
-//         Node(T val) : data(val), next(nullptr) {}
-//     };
-//
-//     Node* tail = nullptr;
-//     int sz = 0;
-//
+// class Shape {
+// protected:
+//     double x, y;
+//     double angle;
+//     double scale;
 // public:
-//     void push(T val) {
-//         Node* n = new Node(val);
-//         if (!tail) {
-//             tail = n;
-//             tail->next = tail;
-//         } else {
-//             n->next = tail->next;
-//             tail->next = n;
-//             tail = n;
-//         }
-//         sz++;
+//     Shape(double x = 0, double y = 0, double angle = 0, double scale = 1.0)
+//         : x(x), y(y), angle(angle), scale(scale) {}
+//
+//     virtual ~Shape() {}
+//
+//     virtual void draw() = 0;
+//     virtual void hide() = 0;
+//
+//     virtual void rotate(double deg) {
+//         angle += deg;
+//         cout << "Повернуто на " << deg << " град. Поточний кут: " << angle << endl;
 //     }
 //
-//     void pop() {
-//         if (!tail) return;
-//         Node* head = tail->next;
-//         if (head == tail) {
-//             delete head;
-//             tail = nullptr;
-//         } else {
-//             tail->next = head->next;
-//             delete head;
-//         }
-//         sz--;
+//     virtual void move(double dx, double dy) {
+//         x += dx;
+//         y += dy;
+//         cout << "Переміщено на (" << dx << ", " << dy << "). Нова позиція: (" << x << ", " << y << ")" << endl;
 //     }
+// };
 //
-//     void print() {
-//         if (!tail) return;
-//         Node* curr = tail->next;
-//         do {
-//             cout << curr->data << " ";
-//             curr = curr->next;
-//         } while (curr != tail->next);
-//         cout << "\n";
-//     }
+// class Triangle : public Shape {
+// public:
+//     Triangle(double x, double y) : Shape(x, y) {}
+//     void draw() override { cout << "Малюємо трикутник в (" << x << ", " << y << ")\n"; }
+//     void hide() override { cout << "Ховаємо трикутник\n"; }
+// };
 //
-//     int size() { return sz; }
+// class Quad : public Shape {
+// public:
+//     Quad(double x, double y) : Shape(x, y) {}
+//     void draw() override { cout << "Малюємо чотирикутник в (" << x << ", " << y << ")\n"; }
+//     void hide() override { cout << "Ховаємо чотирикутник\n"; }
+// };
+//
+// class Polygon : public Shape {
+// public:
+//     Polygon(double x, double y) : Shape(x, y) {}
+//     void draw() override { cout << "Малюємо багатокутник в (" << x << ", " << y << ")\n"; }
+//     void hide() override { cout << "Ховаємо багатокутник\n"; }
 // };
 //
 // int main() {
-//     CircularList<int> l;
-//     l.push(10);
-//     l.push(20);
-//     l.push(30);
-//     l.print();
-//     cout << "Розмір: " << l.size() << "\n";
-//     l.pop();
-//     l.print();
+//     Shape* shapes[3];
+//     shapes[0] = new Triangle(1, 2);
+//     shapes[1] = new Quad(3, 4);
+//     shapes[2] = new Polygon(5, 6);
+//
+//     for (int i = 0; i < 3; i++) {
+//         shapes[i]->draw();
+//         shapes[i]->rotate(45);
+//         shapes[i]->move(2, 3);
+//         shapes[i]->hide();
+//         cout << "-------------------\n";
+//     }
+//
+//     for (int i = 0; i < 3; i++) {
+//         delete shapes[i];
+//     }
+//
+//     return 0;
 // }

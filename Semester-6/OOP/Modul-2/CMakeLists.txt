@@ -3,7 +3,7 @@ project(Modul_2)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(Modul_2 main.cpp
+add_executable(Modul_2
         Task1.cpp
         Task2.cpp
         Task3.cpp
