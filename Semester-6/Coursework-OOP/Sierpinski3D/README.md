@@ -31,3 +31,32 @@ cd MNTU-edu-archive/Semester-6/Coursework-OOP/Sierpinski3D
 # Зібрати та запустити проєкт
 dotnet run
 ```
+
+---
+
+| Клавіші / Дія      | Функція                            |
+| ------------------ | ---------------------------------- |
+| **WASD**           | Переміщення камери у просторі      |
+| **Space / Shift**  | Підйом / спуск камери              |
+| **Рух миші**       | Огляд камери (Pitch / Yaw)         |
+| **Коліщатко миші** | Зміна швидкості переміщення камери |
+| **Left ALT**       | Перемикання між камерою та UI      |
+| **ESC**            | Вихід із програми                  |
+
+
+---
+
+Sierpinski3D_Raymarching \
+├── Core/             # Engine, WindowService, Program (Точка входу)\
+├── Graphics/         # Shader, ScreenQuad (Низькорівнева робота з OpenGL)\
+├── Scene/            # Camera, SierpinskiFractal, SceneEnvironment, Light, Skybox\
+├── UI/               # UIManager, IUIWindow, модулі вікон ImGui\
+└── Shaders/          # GLSL шейдери (vert_screen.glsl, frag_sierpinski.glsl)
+
+---
+
+Автор Паненко Ян (група аІк-43)  
+Фаховий коледж ЗВО «Міжнародний науково-технічний університет імені академіка Юрія Бугая»
+
+
+
