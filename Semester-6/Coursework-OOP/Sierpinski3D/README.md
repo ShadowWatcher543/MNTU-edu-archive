@@ -23,10 +23,10 @@
 
 ```bash
 # Клонувати репозиторій
-git clone [https://github.com/ShadowWatcher543/Sierpinski3D.git](https://github.com/ShadowWatcher543/Sierpinski3D.git)
+git clone https://github.com/ShadowWatcher543/MNTU-edu-archive.git
 
 # Перейти в директорію проєкту
-cd Sierpinski3D
+cd MNTU-edu-archive/Semester-6/Coursework-OOP/Sierpinski3D
 
 # Зібрати та запустити проєкт
 dotnet run
